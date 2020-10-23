@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+<script defer src="graph.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<link rel="stylesheet" href="style.css">
+<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>  
+<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+<style>
+  img{
+	pointer-events: none;
+}
+</style>
+
+
+<script>
+  window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {            
+	title:{
+		text: "Three day forecast"              
+	},
+	axisY: {
+		suffix: " °C",
+		maximum: 40,
+		gridThickness: 0
+	},
+	toolTip:{
+		shared: true,
+		content: "{name} </br> <strong>Temperature: </strong> </br> Min: {y[0]} °C, Max: {y[1]} °C"
+	},
+	data: [{
+		type: "rangeSplineArea",
+		fillOpacity: 0.1,
+		color: "#91AAB1",
+		indexLabelFormatter: formatter,
+		dataPoints: [
+			{ label: "Today", y: [15, 26], name: "rainy" },
+			{ label: "Tomorrow", y: [15, 27], name: "rainy" },
+			{ label: "Day after Tomorrow", y: [13, 27], name: "sunny" },
+			
+		]
+	}]
+});
+chart.render();
+
+var images = [];    
+
+addImages(chart);
+
+function addImages(chart) {
+	for(var i = 0; i < chart.data[0].dataPoints.length; i++){
+		var dpsName = chart.data[0].dataPoints[i].name;
+		if(dpsName == "cloudy"){
+			images.push($("<img>").attr("src", "https://canvasjs.com/wp-content/uploads/images/gallery/gallery-overview/cloudy.png"));
+		} else if(dpsName == "rainy"){
+		images.push($("<img>").attr("src", "https://canvasjs.com/wp-content/uploads/images/gallery/gallery-overview/rainy.png"));
+		} else if(dpsName == "sunny"){
+			images.push($("<img>").attr("src", "https://canvasjs.com/wp-content/uploads/images/gallery/gallery-overview/sunny.png"));
+		}
+
+	images[i].attr("class", dpsName).appendTo($("#chartContainer>.canvasjs-chart-container"));
+	positionImage(images[i], i);
+	}
+}
+
+function positionImage(image, index) {
+	var imageCenter = chart.axisX[0].convertValueToPixel(chart.data[0].dataPoints[index].x);
+	var imageTop =  chart.axisY[0].convertValueToPixel(chart.axisY[0].maximum);
+
+	image.width("40px")
+	.css({ "left": imageCenter - 20 + "px",
+	"position": "absolute","top":imageTop + "px",
+	"position": "absolute"});
+}
+
+$( window ).resize(function() {
+	var cloudyCounter = 0, rainyCounter = 0, sunnyCounter = 0;    
+	var imageCenter = 0;
+	for(var i=0;i<chart.data[0].dataPoints.length;i++) {
+		imageCenter = chart.axisX[0].convertValueToPixel(chart.data[0].dataPoints[i].x) - 20;
+		if(chart.data[0].dataPoints[i].name == "cloudy") {					
+			$(".cloudy").eq(cloudyCounter++).css({ "left": imageCenter});
+		} else if(chart.data[0].dataPoints[i].name == "rainy") {
+			$(".rainy").eq(rainyCounter++).css({ "left": imageCenter});  
+		} else if(chart.data[0].dataPoints[i].name == "sunny") {
+			$(".sunny").eq(sunnyCounter++).css({ "left": imageCenter});  
+		}                
+	}
+});
+
+function formatter(e) { 
+	if(e.index === 0 && e.dataPoint.x === 0) {
+		return " Min " + e.dataPoint.y[e.index] + "°";
+	} else if(e.index == 1 && e.dataPoint.x === 0) {
+		return " Max " + e.dataPoint.y[e.index] + "°";
+	} else{
+		return e.dataPoint.y[e.index] + "°";
+	}
+} 
+
+}
+</script>
+</head>
+<body>
+    <!--Navigation bar-->
+    <nav class="navbar navbar-expand-md navbar-light sticky-top" style="background-color: aliceblue;">
+        <!--Navbar Logo-->
+        <a class="navbar-brand" href="welcome.html"><img style="border-radius: 50%;" src="images/logo.png" width="15%" height="15%" alt=""></a>
+        <!--Togglable Hamburger menu to show/hide contents-->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--Navbar Links connecting to other pages-->
+        <div class="collapse navbar-collapse " id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item ">
+              <a class="nav-link" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About Us</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="search.html">Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="graph.html">Graph</a>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
+            <input id="search_city"class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit" id="search_button">Search</button>
+          </form>
+          <span class="m-1">
+            <button style="border-radius: 50%; outline: none;" id="curLoc">
+            <i class="fa fa-map-marker"  aria-hidden="true"></i>
+            </button>
+          </span>
+        </div>
+      </nav>
+
+      <div class="container d-flex justify-content-center" id="search_container">
+
+        <h3 class="text-center">Please Input city in the search box or tap on the location icon to get results and display graph.</h3>
+
+      </div>
+
+      <div id="chartContainer" style="height: 300px; width: 100%; position: relative;"></div>
+
+
+
+
+      <footer class="container-fluid bg-light">
+        <div class="row col-12">
+            <div class="col-6 text-center">
+                <ul>
+                    <li><b>Features</b></li>
+                    <hr>
+                    <li><a href="home.html">Weather</a></li>
+                    <li><a href="search.html">Search</a></li>
+                    <li><a href="">Graph</a></li>
+                </ul>
+            </div>
+            <div class="col-6 text-center">
+                <ul>
+                    <li><b>Contact</b></li>
+                    <hr>
+                    <li>arunabhs@cybage.com</li>
+                    <li>Extn. no: 9277</li>
+                    <li>Mob. no: 8840537613 </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
